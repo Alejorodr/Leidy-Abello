@@ -1,6 +1,10 @@
 import { createClient } from "@sanity/client";
 import imageUrlBuilder from "@sanity/image-url";
-import type { SanityImageSource } from "@sanity/image-url";
+
+type SanityImageSource =
+  | string
+  | { _ref: string }
+  | { asset: { _ref: string } };
 
 const projectId = process.env.SANITY_PROJECT_ID ?? "x2h90o8o";
 const dataset = process.env.SANITY_DATASET ?? "production";
