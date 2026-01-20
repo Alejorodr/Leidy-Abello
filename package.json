@@ -10,6 +10,7 @@
     "lint": "next lint",
     "studio:dev": "npm --prefix studio-leidy-abello run dev",
     "studio:build": "npm --prefix studio-leidy-abello run build",
+    "studio:deploy": "npm --prefix studio-leidy-abello run deploy",
     "format": "prettier --write .",
     "prepare": "node scripts/prepare-husky.mjs",
     "prisma:generate": "prisma generate",
