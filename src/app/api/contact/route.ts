@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 async function verifyHcaptcha(token: string | null) {
   if (!token || !process.env.HCAPTCHA_SECRET) {
@@ -27,7 +27,9 @@ export async function POST(request: Request) {
   const formData = await request.formData();
 
   const name = String(formData.get("name") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
   const message = String(formData.get("message") ?? "").trim();
   const hcaptchaToken = formData.get("hcaptchaToken")?.toString() ?? null;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -48,7 +50,10 @@ export async function POST(request: Request) {
     email.length > maxEmailLength ||
     message.length > maxMessageLength
   ) {
-    return NextResponse.json({ error: "Datos demasiado largos" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Datos demasiado largos" },
+      { status: 400 },
+    );
   }
 
   const hcaptchaOk = await verifyHcaptcha(hcaptchaToken);
@@ -57,7 +62,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "hCaptcha inválido" }, { status: 400 });
   }
 
-  if (process.env.DATABASE_URL) {
+  const prisma = getPrisma();
+  if (prisma) {
     await prisma.lead.create({
       data: {
         name,
@@ -70,7 +76,7 @@ export async function POST(request: Request) {
   if (!process.env.CONTACT_TO_EMAIL) {
     return NextResponse.json(
       { error: "Missing CONTACT_TO_EMAIL env var" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
