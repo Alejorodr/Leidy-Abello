@@ -27,7 +27,7 @@ export async function POST(request: Request) {
   const formData = await request.formData();
 
   const name = String(formData.get("name") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const message = String(formData.get("message") ?? "").trim();
   const hcaptchaToken = formData.get("hcaptchaToken")?.toString() ?? null;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -77,13 +77,15 @@ export async function POST(request: Request) {
   if (process.env.RESEND_API_KEY) {
     const resend = new Resend(process.env.RESEND_API_KEY);
 
-    await resend.emails.send({
+    const payload: Parameters<typeof resend.emails.send>[0] = {
       from: "Leidy Abello <no-reply@leidyabello.com>",
       to: process.env.CONTACT_TO_EMAIL,
       subject: "Nuevo lead desde el sitio",
-      reply_to: email,
+      replyTo: email,
       text: `Nombre: ${name}\nEmail: ${email}\nMensaje: ${message}`,
-    });
+    };
+
+    await resend.emails.send(payload);
   }
 
   return NextResponse.json({ ok: true });
