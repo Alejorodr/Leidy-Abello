@@ -1,0 +1,5 @@
+studio-leidy-abello/
+.next/
+node_modules/
+dist/
+build/
