@@ -1,3 +1,5 @@
+import "server-only";
+
 export const blogPosts = [
   {
     slug: "autoestima-como-ritual",
