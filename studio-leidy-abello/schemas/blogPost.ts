@@ -24,6 +24,17 @@ export const blogPost = defineType({
       type: "text",
     }),
     defineField({
+      name: "publishedAt",
+      title: "Fecha publicación",
+      type: "datetime",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "readTime",
+      title: "Tiempo de lectura",
+      type: "string",
+    }),
+    defineField({
       name: "coverImage",
       title: "Imagen de portada",
       type: "image",

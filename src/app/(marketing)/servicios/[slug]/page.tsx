@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { services } from "@/modules/services/data";
@@ -47,7 +48,9 @@ export default function ServiceDetailPage({ params }: PageProps) {
           necesidades. Cada encuentro está pensado para que te sientas contenida
           y acompañada.
         </p>
-        <Button className="w-fit">Agenda tu sesión</Button>
+        <Button asChild className="mt-6 w-fit">
+          <Link href="/contacto">Agenda tu sesión</Link>
+        </Button>
       </div>
     </section>
   );

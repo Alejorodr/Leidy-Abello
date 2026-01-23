@@ -24,6 +24,11 @@ export const podcastEpisode = defineType({
       type: "text",
     }),
     defineField({
+      name: "duration",
+      title: "Duración",
+      type: "string",
+    }),
+    defineField({
       name: "coverImage",
       title: "Imagen",
       type: "image",
