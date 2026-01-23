@@ -19,6 +19,22 @@ export const aboutPage = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "introduction",
+      title: "Introducción",
+      type: "text",
+    }),
+    defineField({
+      name: "philosophy",
+      title: "Filosofía",
+      type: "text",
+    }),
+    defineField({
+      name: "values",
+      title: "Valores",
+      type: "array",
+      of: [{ type: "string" }],
+    }),
+    defineField({
       name: "portrait",
       title: "Retrato",
       type: "image",

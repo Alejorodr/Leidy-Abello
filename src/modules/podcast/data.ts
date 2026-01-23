@@ -1,3 +1,5 @@
+import "server-only";
+
 export const podcastEpisodes = [
   {
     slug: "cuerpo-habitable",
@@ -16,8 +18,7 @@ export const podcastEpisodes = [
   {
     slug: "rituales-que-sostienen",
     title: "Rituales que sostienen",
-    description:
-      "Prácticas sencillas para volver a tu centro cada día.",
+    description: "Prácticas sencillas para volver a tu centro cada día.",
     duration: "35 min",
   },
 ];

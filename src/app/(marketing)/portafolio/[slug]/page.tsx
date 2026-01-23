@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { portfolioCases } from "@/modules/portfolio/data";
@@ -46,7 +47,9 @@ export default function PortfolioDetailPage({ params }: PageProps) {
           Todo el proceso se desarrolló con consentimiento informado y en un
           entorno seguro.
         </p>
-        <Button className="w-fit">Quiero un proceso similar</Button>
+        <Button asChild className="w-fit">
+          <Link href="/contacto">Quiero un proceso similar</Link>
+        </Button>
       </div>
     </section>
   );

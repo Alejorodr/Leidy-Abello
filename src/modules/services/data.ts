@@ -1,3 +1,5 @@
+import "server-only";
+
 export const services = [
   {
     slug: "ritual-identidad",

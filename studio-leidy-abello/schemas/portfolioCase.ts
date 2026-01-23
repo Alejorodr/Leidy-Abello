@@ -19,6 +19,17 @@ export const portfolioCase = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "summary",
+      title: "Resumen",
+      type: "text",
+    }),
+    defineField({
+      name: "content",
+      title: "Contenido",
+      type: "array",
+      of: [{ type: "block" }],
+    }),
+    defineField({
       name: "consent",
       title: "Consentimiento",
       type: "boolean",

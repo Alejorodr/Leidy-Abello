@@ -19,9 +19,15 @@ export const service = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "summary",
-      title: "Resumen",
+      name: "description",
+      title: "Descripción",
       type: "text",
+    }),
+    defineField({
+      name: "highlights",
+      title: "Puntos destacados",
+      type: "array",
+      of: [{ type: "string" }],
     }),
     defineField({
       name: "image",
