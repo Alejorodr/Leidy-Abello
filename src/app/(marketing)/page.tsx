@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "@phosphor-icons/react";
 
-import logo from "../../../images/Logo_Leidy_Abello.png";
+import logo from "../../../images/Logo_Leidy_Abello.webp";
 
 import { Button } from "@/components/ui/button";
 import { getBlogPosts, getServices, getPortfolioCases } from "@/lib/sanity";
@@ -47,6 +47,8 @@ export default async function HomePage() {
               width={360}
               height={220}
               className="relative mx-auto"
+              priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
             <div className="relative mt-8 space-y-3 text-sm text-neutral-700">
               <p>Consultas personalizadas · Cali, Colombia</p>
