@@ -1,53 +1,33 @@
+// src/app/api/contact/route.ts
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { PrismaClient } from "@prisma/client";
+import { emailRegex } from "@/lib/validation";
 
-import { getPrisma } from "@/lib/prisma";
-import { emailRegex, sanitizeText } from "@/lib/validation";
+const prisma = new PrismaClient();
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-async function verifyHcaptcha(token: string | null) {
-  if (!process.env.HCAPTCHA_SECRET) {
-    return true;
-  }
-
-  if (!token) {
-    return false;
-  }
-
-  const response = await fetch("https://hcaptcha.com/siteverify", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams({
-      secret: process.env.HCAPTCHA_SECRET,
-      response: token,
-    }),
-  });
-
-  const data = (await response.json()) as { success: boolean };
-  return data.success;
-}
+const maxNameLength = 200;
+const maxEmailLength = 320;
+const maxMessageLength = 5000;
 
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData();
+    const { name, email, message, captchaToken } = await request.json();
 
-    const name = sanitizeText(String(formData.get("name") ?? ""));
-    const email = sanitizeText(String(formData.get("email") ?? ""))
-      .toLowerCase()
-      .trim();
-    const message = sanitizeText(String(formData.get("message") ?? ""));
-    const hcaptchaToken = formData.get("hcaptchaToken")?.toString() ?? null;
-    const maxNameLength = 200;
-    const maxEmailLength = 320;
-    const maxMessageLength = 5000;
-
+    // 1. Validate input
     if (!name || !email || !message) {
-      return NextResponse.json({ error: "Datos incompletos" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Todos los campos son obligatorios." },
+        { status: 400 },
+      );
     }
 
     if (!emailRegex.test(email)) {
-      return NextResponse.json({ error: "Email inválido" }, { status: 400 });
+      return NextResponse.json(
+        { error: "El correo no es válido." },
+        { status: 400 },
+      );
     }
 
     if (
@@ -56,26 +36,33 @@ export async function POST(request: Request) {
       message.length > maxMessageLength
     ) {
       return NextResponse.json(
-        { error: "Datos demasiado largos" },
+        { error: "Los datos exceden el tamaño permitido." },
         { status: 400 },
       );
     }
 
-    const hcaptchaOk = await verifyHcaptcha(hcaptchaToken);
+    // 2. Validate hCaptcha token
+    const captchaValidationResponse = await fetch(
+      "https://hcaptcha.com/siteverify",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: `response=${captchaToken}&secret=${process.env.HCAPTCHA_SECRET}`,
+      },
+    );
+    const captchaValidationData = await captchaValidationResponse.json();
 
-    if (!hcaptchaOk) {
-      return NextResponse.json({ error: "hCaptcha inválido" }, { status: 400 });
-    }
-
-    const prisma = getPrisma();
-    if (!prisma) {
+    if (!captchaValidationData.success) {
       return NextResponse.json(
-        { error: "Base de datos no configurada" },
-        { status: 500 },
+        { error: "CAPTCHA inválido." },
+        { status: 400 },
       );
     }
 
-    await prisma.lead.create({
+    // 2. Save lead to database
+    const newLead = await prisma.lead.create({
       data: {
         name,
         email,
@@ -83,31 +70,36 @@ export async function POST(request: Request) {
       },
     });
 
-    if (!process.env.CONTACT_TO_EMAIL) {
-      return NextResponse.json(
-        { error: "Missing CONTACT_TO_EMAIL env var" },
-        { status: 500 },
+    // 3. Send email notification
+    const toEmail = process.env.CONTACT_TO_EMAIL;
+    if (toEmail) {
+      await resend.emails.send({
+        from: `Contacto <no-reply@leidyabello.com>`,
+        to: toEmail,
+        subject: "Nuevo mensaje de contacto",
+        html: `
+          <h1>Nuevo mensaje de contacto</h1>
+          <p><strong>Nombre:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Mensaje:</strong></p>
+          <p>${message}</p>
+        `,
+      });
+    } else {
+      console.error(
+        "CONTACT_TO_EMAIL no está definido. No se pudo enviar el email.",
       );
     }
 
-    if (process.env.RESEND_API_KEY) {
-      const resend = new Resend(process.env.RESEND_API_KEY);
-
-      const payload: Parameters<typeof resend.emails.send>[0] = {
-        from: "Leidy Abello <no-reply@leidyabello.com>",
-        to: process.env.CONTACT_TO_EMAIL,
-        subject: "Nuevo lead desde el sitio",
-        replyTo: email,
-        text: `Nombre: ${name}\nEmail: ${email}\nMensaje: ${message}`,
-      };
-
-      const result = await resend.emails.send(payload);
-      console.info("Contact email sent", result);
-    }
-
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({
+      message: "¡Mensaje enviado con éxito!",
+      lead: newLead,
+    });
   } catch (error) {
-    console.error("Contact form error", error);
-    return NextResponse.json({ error: "Error interno" }, { status: 500 });
+    console.error(error);
+    return NextResponse.json(
+      { error: "Ocurrió un error en el servidor." },
+      { status: 500 },
+    );
   }
 }

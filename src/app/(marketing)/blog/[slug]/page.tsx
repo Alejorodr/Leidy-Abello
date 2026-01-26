@@ -1,25 +1,39 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
-import { blogPosts } from "@/modules/blog/data";
+import { getBlogPostBySlug, getBlogPosts } from "@/lib/sanity";
+import { BlogPost } from "@/lib/sanity.types";
 
 type PageProps = {
   params: { slug: string };
 };
 
+export async function generateStaticParams() {
+  const posts: BlogPost[] = await getBlogPosts();
+  return posts.map((post) => ({
+    slug: post.slug.current,
+  }));
+}
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const post = blogPosts.find((item) => item.slug === params.slug);
+  const post: BlogPost = await getBlogPostBySlug(params.slug);
+
+  if (!post) {
+    return {
+      title: "Artículo no encontrado",
+    };
+  }
 
   return {
-    title: post?.title ?? "Artículo",
-    description: post?.excerpt ?? "Detalle del artículo.",
+    title: post.seo?.title ?? post.title,
+    description: post.seo?.description ?? post.excerpt,
   };
 }
 
-export default function BlogDetailPage({ params }: PageProps) {
-  const post = blogPosts.find((item) => item.slug === params.slug);
+export default async function BlogDetailPage({ params }: PageProps) {
+  const post: BlogPost = await getBlogPostBySlug(params.slug);
 
   if (!post) {
     notFound();
@@ -33,7 +47,12 @@ export default function BlogDetailPage({ params }: PageProps) {
         </p>
         <h1 className="text-4xl font-semibold">{post.title}</h1>
         <p className="text-sm text-neutral-500">
-          {post.date} · {post.readTime}
+          {new Date(post.publishedAt).toLocaleDateString("es-ES", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}{" "}
+          · {post.readTime}
         </p>
       </header>
       <div className="card space-y-4 text-sm text-neutral-600">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import HCaptcha from "react-hcaptcha";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
 
 import { Button } from "@/components/ui/button";
 import { emailRegex, sanitizeText } from "@/lib/validation";
@@ -51,17 +51,26 @@ export function ContactForm() {
       return;
     }
 
-    formData.set("hcaptchaToken", hcaptchaToken);
-
     try {
       setSubmitting(true);
       const response = await fetch("/api/contact", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          message,
+          captchaToken: hcaptchaToken,
+        }),
       });
-      const data = (await response.json()) as { ok?: boolean; error?: string };
+      const data = (await response.json()) as {
+        message?: string;
+        error?: string;
+      };
 
-      if (response.ok && data.ok) {
+      if (response.ok) {
         setSuccessMessage("Gracias, pronto te contactaré.");
         setErrorMessage("");
         formRef.current?.reset();

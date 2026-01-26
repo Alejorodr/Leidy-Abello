@@ -1,25 +1,39 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
-import { podcastEpisodes } from "@/modules/podcast/data";
+import { getPodcastEpisodeBySlug, getPodcastEpisodes } from "@/lib/sanity";
+import { PodcastEpisode } from "@/lib/sanity.types";
 
 type PageProps = {
   params: { slug: string };
 };
 
+export async function generateStaticParams() {
+  const episodes: PodcastEpisode[] = await getPodcastEpisodes();
+  return episodes.map((episode) => ({
+    slug: episode.slug.current,
+  }));
+}
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const episode = podcastEpisodes.find((item) => item.slug === params.slug);
+  const episode: PodcastEpisode = await getPodcastEpisodeBySlug(params.slug);
+
+  if (!episode) {
+    return {
+      title: "Episodio no encontrado",
+    };
+  }
 
   return {
-    title: episode?.title ?? "Episodio",
-    description: episode?.description ?? "Detalle del episodio.",
+    title: episode.seo?.title ?? episode.title,
+    description: episode.seo?.description ?? episode.summary,
   };
 }
 
-export default function PodcastDetailPage({ params }: PageProps) {
-  const episode = podcastEpisodes.find((item) => item.slug === params.slug);
+export default async function PodcastDetailPage({ params }: PageProps) {
+  const episode: PodcastEpisode = await getPodcastEpisodeBySlug(params.slug);
 
   if (!episode) {
     notFound();
@@ -35,7 +49,7 @@ export default function PodcastDetailPage({ params }: PageProps) {
         <p className="text-sm text-neutral-500">{episode.duration}</p>
       </header>
       <div className="card space-y-4 text-sm text-neutral-600">
-        <p>{episode.description}</p>
+        <p>{episode.summary}</p>
         <p>
           Este episodio invita a reflexionar sobre tu relación con el cuerpo y a
           construir rutinas que acompañen tu bienestar emocional.

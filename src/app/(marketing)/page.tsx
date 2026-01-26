@@ -5,11 +5,16 @@ import { ArrowRight } from "@phosphor-icons/react";
 import logo from "../../../images/Logo_Leidy_Abello.png";
 
 import { Button } from "@/components/ui/button";
-import { blogPosts } from "@/modules/blog/data";
-import { portfolioCases } from "@/modules/portfolio/data";
-import { services } from "@/modules/services/data";
+import { getBlogPosts, getServices, getPortfolioCases } from "@/lib/sanity";
+import { BlogPost, Service, PortfolioCase } from "@/lib/sanity.types";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [services, blogPosts, portfolioCases]: [
+    Service[],
+    BlogPost[],
+    PortfolioCase[],
+  ] = await Promise.all([getServices(), getBlogPosts(), getPortfolioCases()]);
+
   return (
     <div className="space-y-24 pb-24">
       <section className="bg-gradient-to-b from-brand-50 via-brand-50 to-white">
@@ -53,7 +58,9 @@ export default function HomePage() {
 
       <section className="mx-auto grid max-w-6xl gap-10 px-6 md:grid-cols-[1fr_1.2fr] md:px-10">
         <div className="space-y-4">
-          <h2 className="section-title">Servicios diseñados para tu bienestar</h2>
+          <h2 className="section-title">
+            Servicios diseñados para tu bienestar
+          </h2>
           <p className="text-neutral-600">
             Cada proceso es íntimo, respetuoso y centrado en tus ritmos.
             Trabajamos desde la escucha y la estética consciente.
@@ -66,7 +73,7 @@ export default function HomePage() {
         </div>
         <div className="grid gap-6">
           {services.map((service) => (
-            <div key={service.slug} className="card">
+            <div key={service.slug.current} className="card">
               <h3 className="text-xl font-semibold">{service.title}</h3>
               <p className="mt-3 text-sm text-neutral-600">
                 {service.description}
@@ -77,7 +84,9 @@ export default function HomePage() {
                 ))}
               </ul>
               <Button asChild variant="outline" className="mt-6 w-fit">
-                <Link href={`/servicios/${service.slug}`}>Conocer más</Link>
+                <Link href={`/servicios/${service.slug.current}`}>
+                  Conocer más
+                </Link>
               </Button>
             </div>
           ))}
@@ -98,11 +107,13 @@ export default function HomePage() {
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {portfolioCases.map((item) => (
-            <div key={item.slug} className="card">
+            <div key={item.slug.current} className="card">
               <h3 className="text-lg font-semibold">{item.title}</h3>
               <p className="mt-3 text-sm text-neutral-600">{item.summary}</p>
               <Button asChild variant="outline" className="mt-6 w-fit">
-                <Link href={`/portafolio/${item.slug}`}>Leer historia</Link>
+                <Link href={`/portafolio/${item.slug.current}`}>
+                  Leer historia
+                </Link>
               </Button>
             </div>
           ))}
@@ -123,14 +134,19 @@ export default function HomePage() {
         </div>
         <div className="grid gap-6 md:grid-cols-2">
           {blogPosts.slice(0, 2).map((post) => (
-            <div key={post.slug} className="card">
+            <div key={post.slug.current} className="card">
               <p className="text-xs uppercase tracking-[0.2em] text-brand-300">
-                {post.date} · {post.readTime}
+                {new Date(post.publishedAt).toLocaleDateString("es-ES", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}{" "}
+                · {post.readTime}
               </p>
               <h3 className="mt-3 text-lg font-semibold">{post.title}</h3>
               <p className="mt-3 text-sm text-neutral-600">{post.excerpt}</p>
               <Button asChild variant="outline" className="mt-6 w-fit">
-                <Link href={`/blog/${post.slug}`}>Leer artículo</Link>
+                <Link href={`/blog/${post.slug.current}`}>Leer artículo</Link>
               </Button>
             </div>
           ))}
