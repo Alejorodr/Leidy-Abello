@@ -1,6 +1,6 @@
 // src/lib/sanity.ts
 import { createClient, groq } from "sanity";
-import imageUrlBuilder from "@sanity/image-url";
+import { createImageUrlBuilder } from "@sanity/image-url";
 import {
   HomePage,
   Service,
@@ -19,7 +19,7 @@ const sanityConfig = {
 
 export const sanityClient = createClient(sanityConfig);
 
-const builder = imageUrlBuilder(sanityClient);
+const builder = createImageUrlBuilder(sanityClient);
 
 export function urlFor(source: SanityImage) {
   return builder.image(source);
