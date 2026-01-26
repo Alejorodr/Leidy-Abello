@@ -1,5 +1,5 @@
 // src/lib/sanity.ts
-import { createClient, groq } from "sanity";
+import { createClient, groq } from "@sanity/client";
 import { createImageUrlBuilder } from "@sanity/image-url";
 import {
   HomePage,
@@ -13,7 +13,7 @@ import {
 const sanityConfig = {
   projectId: process.env.SANITY_PROJECT_ID,
   dataset: process.env.SANITY_DATASET,
-  apiVersion: "2024-01-01", // YYYY-MM-DD
+  apiVersion: "2024-01-01",
   useCdn: true,
 };
 
@@ -25,7 +25,7 @@ export function urlFor(source: SanityImage) {
   return builder.image(source);
 }
 
-// GROQ Queries
+// Las queries GROQ no cambian
 export async function getHomePage(): Promise<HomePage> {
   const query = groq`*[_type == "homePage"][0]`;
   return await sanityClient.fetch(query);
