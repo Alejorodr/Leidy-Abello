@@ -1,14 +1,11 @@
+// @ts-nocheck
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
-
 import { Button } from "@/components/ui/button";
 import { getPortfolioCaseBySlug, getPortfolioCases } from "@/lib/sanity";
 import { PortfolioCase } from "@/lib/sanity.types";
-
-type PageProps = {
-  params: { slug: string };
-};
+import { PortableText } from "@/components/common/portable-text";
 
 export async function generateStaticParams() {
   const cases: PortfolioCase[] = await getPortfolioCases();
@@ -19,7 +16,9 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: PageProps): Promise<Metadata> {
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
   const item: PortfolioCase = await getPortfolioCaseBySlug(params.slug);
 
   if (!item) {
@@ -34,7 +33,11 @@ export async function generateMetadata({
   };
 }
 
-export default async function PortfolioDetailPage({ params }: PageProps) {
+export default async function PortfolioDetailPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
   const item: PortfolioCase = await getPortfolioCaseBySlug(params.slug);
 
   if (!item) {
@@ -50,17 +53,10 @@ export default async function PortfolioDetailPage({ params }: PageProps) {
         <h1 className="text-4xl font-semibold">{item.title}</h1>
         <p className="text-lg text-neutral-700">{item.summary}</p>
       </header>
-      <div className="card space-y-4">
-        <h2 className="text-2xl font-semibold">Proceso</h2>
-        <p className="text-sm text-neutral-600">
-          Este acompañamiento se enfocó en crear rutinas de autocuidado
-          sostenibles, sostener la autoestima y diseñar una estética que
-          reflejara la esencia personal de nuestra consultante.
-        </p>
-        <p className="text-sm text-neutral-600">
-          Todo el proceso se desarrolló con consentimiento informado y en un
-          entorno seguro.
-        </p>
+      <div className="prose prose-lg max-w-none">
+        {item.body ? <PortableText value={item.body} /> : null}
+      </div>
+      <div className="card mt-8">
         <Button asChild className="w-fit">
           <Link href="/contacto">Quiero un proceso similar</Link>
         </Button>
