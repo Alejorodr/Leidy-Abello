@@ -3,25 +3,39 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { portfolioCases } from "@/modules/portfolio/data";
+import { getPortfolioCaseBySlug, getPortfolioCases } from "@/lib/sanity";
+import { PortfolioCase } from "@/lib/sanity.types";
 
 type PageProps = {
   params: { slug: string };
 };
 
+export async function generateStaticParams() {
+  const cases: PortfolioCase[] = await getPortfolioCases();
+  return cases.map((item) => ({
+    slug: item.slug.current,
+  }));
+}
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const item = portfolioCases.find((caseItem) => caseItem.slug === params.slug);
+  const item: PortfolioCase = await getPortfolioCaseBySlug(params.slug);
+
+  if (!item) {
+    return {
+      title: "Caso no encontrado",
+    };
+  }
 
   return {
-    title: item?.title ?? "Caso",
-    description: item?.summary ?? "Detalle del caso.",
+    title: item.seo?.title ?? item.title,
+    description: item.seo?.description ?? item.summary,
   };
 }
 
-export default function PortfolioDetailPage({ params }: PageProps) {
-  const item = portfolioCases.find((caseItem) => caseItem.slug === params.slug);
+export default async function PortfolioDetailPage({ params }: PageProps) {
+  const item: PortfolioCase = await getPortfolioCaseBySlug(params.slug);
 
   if (!item) {
     notFound();

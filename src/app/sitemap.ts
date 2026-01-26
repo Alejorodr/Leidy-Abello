@@ -1,11 +1,19 @@
 import type { MetadataRoute } from "next";
 
-import { blogPosts } from "@/modules/blog/data";
-import { podcastEpisodes } from "@/modules/podcast/data";
-import { portfolioCases } from "@/modules/portfolio/data";
-import { services } from "@/modules/services/data";
+import {
+  getBlogPosts,
+  getServices,
+  getPortfolioCases,
+  getPodcastEpisodes,
+} from "@/lib/sanity";
+import {
+  BlogPost,
+  Service,
+  PortfolioCase,
+  PodcastEpisode,
+} from "@/lib/sanity.types";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ??
     "https://leidy-abello-neon.vercel.app/";
@@ -20,25 +28,37 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/contacto",
   ];
 
+  const [services, blogPosts, portfolioCases, podcastEpisodes]: [
+    Service[],
+    BlogPost[],
+    PortfolioCase[],
+    PodcastEpisode[],
+  ] = await Promise.all([
+    getServices(),
+    getBlogPosts(),
+    getPortfolioCases(),
+    getPodcastEpisodes(),
+  ]);
+
   return [
     ...routes.map((route) => ({
       url: `${baseUrl}${route}`,
       lastModified: new Date(),
     })),
     ...services.map((service) => ({
-      url: `${baseUrl}/servicios/${service.slug}`,
+      url: `${baseUrl}/servicios/${service.slug.current}`,
       lastModified: new Date(),
     })),
     ...portfolioCases.map((item) => ({
-      url: `${baseUrl}/portafolio/${item.slug}`,
+      url: `${baseUrl}/portafolio/${item.slug.current}`,
       lastModified: new Date(),
     })),
     ...blogPosts.map((post) => ({
-      url: `${baseUrl}/blog/${post.slug}`,
+      url: `${baseUrl}/blog/${post.slug.current}`,
       lastModified: new Date(),
     })),
     ...podcastEpisodes.map((episode) => ({
-      url: `${baseUrl}/podcast/${episode.slug}`,
+      url: `${baseUrl}/podcast/${episode.slug.current}`,
       lastModified: new Date(),
     })),
   ];
