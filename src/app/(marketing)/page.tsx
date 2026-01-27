@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "@phosphor-icons/react";
+import { ArrowRight } from "@/components/ui/icons";
 
 import logo from "../../../images/Logo_Leidy_Abello.webp";
 

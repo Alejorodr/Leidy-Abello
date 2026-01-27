@@ -16,7 +16,7 @@ export function ContactForm() {
   const [errorMessage, setErrorMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const formRef = useRef<HTMLFormElement | null>(null);
-  const captchaRef = useRef<{ resetCaptcha: () => void } | null>(null);
+  const captchaRef = useRef<HCaptcha | null>(null);
 
   const siteKey = process.env.NEXT_PUBLIC_HCAPTCHA_SITEKEY ?? "";
 

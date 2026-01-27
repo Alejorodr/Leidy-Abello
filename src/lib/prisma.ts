@@ -1,26 +1,17 @@
 import { PrismaClient } from "@prisma/client";
 
-const globalForPrisma = globalThis as { prisma?: PrismaClient };
+const prismaClientSingleton = () => {
+  return new PrismaClient({
+    log: ["warn", "error"],
+  });
+};
 
-function createPrismaClient() {
-  return new PrismaClient({ log: ["warn", "error"] });
-}
+declare const globalThis: {
+  prismaGlobal: ReturnType<typeof prismaClientSingleton> | undefined;
+} & typeof global;
 
-export function getPrisma(): PrismaClient | null {
-  // Lazy init: allow builds without DATABASE_URL and ensure prisma generate runs before build.
-  if (!process.env.DATABASE_URL) {
-    return null;
-  }
+const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
 
-  if (globalForPrisma.prisma) {
-    return globalForPrisma.prisma;
-  }
+export default prisma;
 
-  const client = createPrismaClient();
-
-  if (process.env.NODE_ENV !== "production") {
-    globalForPrisma.prisma = client;
-  }
-
-  return client;
-}
+if (process.env.NODE_ENV !== "production") globalThis.prismaGlobal = prisma;
