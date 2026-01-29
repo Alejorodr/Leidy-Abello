@@ -32,9 +32,9 @@ CONTACT_TO_EMAIL=tu@email.com
 # Database
 DATABASE_URL=...
 
-# Rate Limiting (Vercel KV)
-KV_REST_API_URL=...
-KV_REST_API_TOKEN=...
+# Rate Limiting (Upstash Redis)
+UPSTASH_REDIS_REST_URL=...
+UPSTASH_REDIS_REST_TOKEN=...
 
 # Captcha
 NEXT_PUBLIC_HCAPTCHA_SITEKEY=...
@@ -60,6 +60,24 @@ El sitio usa revalidación por tags. Para configurar la actualización automáti
 1. Ve a `manage.sanity.io` -> Tu Proyecto -> API -> Webhooks.
 2. Crea un nuevo webhook apuntando a `https://tu-dominio.com/api/revalidate`.
 3. Usa el `SANITY_REVALIDATE_SECRET` definido en tu entorno.
+
+## Vercel Environment Variables
+
+Para que el proyecto funcione correctamente en Vercel, asegúrate de configurar las siguientes variables de entorno:
+
+| Variable | Descripción |
+|----------|-------------|
+| `NEXT_PUBLIC_SANITY_PROJECT_ID` | ID del proyecto de Sanity |
+| `NEXT_PUBLIC_SANITY_DATASET` | Dataset de Sanity (ej: production) |
+| `SANITY_REVALIDATE_SECRET` | Secreto para el webhook de revalidación |
+| `RESEND_API_KEY` | API Key de Resend para el envío de correos |
+| `CONTACT_TO_EMAIL` | Correo que recibirá las notificaciones de contacto |
+| `DATABASE_URL` | URL de conexión a la base de datos (PostgreSQL) |
+| `UPSTASH_REDIS_REST_URL` | URL de la REST API de Upstash Redis |
+| `UPSTASH_REDIS_REST_TOKEN` | Token de la REST API de Upstash Redis |
+| `NEXT_PUBLIC_HCAPTCHA_SITEKEY` | Sitekey de hCaptcha |
+| `HCAPTCHA_SECRET` | Secret key de hCaptcha |
+| `NEXT_PUBLIC_SITE_URL` | URL pública del sitio (para sitemap y metadatos) |
 
 ---
 

@@ -5,8 +5,11 @@ const REQUIRED_ENVS = [
   "RESEND_API_KEY",
   "CONTACT_TO_EMAIL",
   "DATABASE_URL",
-  "KV_REST_API_URL",
-  "KV_REST_API_TOKEN",
+  "UPSTASH_REDIS_REST_URL",
+  "UPSTASH_REDIS_REST_TOKEN",
+  "NEXT_PUBLIC_HCAPTCHA_SITEKEY",
+  "HCAPTCHA_SECRET",
+  "NEXT_PUBLIC_SITE_URL",
 ];
 
 function validate() {
@@ -19,7 +22,9 @@ function validate() {
     if (process.env.NODE_ENV === "production") {
       process.exit(1);
     } else {
-        console.warn("⚠️ WARNING: Build continuing in development mode despite missing envs.");
+      console.warn(
+        "⚠️ WARNING: Build continuing in development mode despite missing envs.",
+      );
     }
   } else {
     console.log("✅ Environment variables validated.");

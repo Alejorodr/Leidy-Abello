@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { Ratelimit } from "@upstash/ratelimit";
-import { kv } from "@vercel/kv";
+import { contactLimiter } from "@/lib/ratelimit";
 import prisma from "@/lib/prisma";
 import {
   emailRegex,
@@ -16,39 +15,40 @@ const maxNameLength = 200;
 const maxEmailLength = 320;
 const maxMessageLength = 5000;
 
-// Create a new ratelimiter, that allows 5 requests per 10 minutes
-const ratelimit = new Ratelimit({
-  redis: kv,
-  limiter: Ratelimit.slidingWindow(5, "10 m"),
-  analytics: true,
-  prefix: "@upstash/ratelimit",
-});
-
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name: rawName, email: rawEmail, message: rawMessage, captchaToken } = body;
+    const {
+      name: rawName,
+      email: rawEmail,
+      message: rawMessage,
+      captchaToken,
+    } = body;
 
     // 1. Rate Limiting
-    const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
-    const { success, limit, reset, remaining } = await ratelimit.limit(
-      `ratelimit_contact_${ip}`
-    );
+    const forwardedFor = request.headers.get("x-forwarded-for");
+    const realIp = request.headers.get("x-real-ip");
+    const identifier = forwardedFor
+      ? forwardedFor.split(",")[0].trim()
+      : realIp ?? "unknown";
+
+    const { success, limit, reset, remaining } =
+      await contactLimiter.limit(identifier);
 
     if (!success) {
       return NextResponse.json(
         {
-            error: "Has realizado demasiados intentos. Por favor, intenta de nuevo más tarde.",
-            retryAfter: reset
+          error: "Too many requests",
+          retryAfter: Math.ceil((reset - Date.now()) / 1000),
         },
         {
-            status: 429,
-            headers: {
-                "X-RateLimit-Limit": limit.toString(),
-                "X-RateLimit-Remaining": remaining.toString(),
-                "X-RateLimit-Reset": reset.toString(),
-            }
-        }
+          status: 429,
+          headers: {
+            "X-RateLimit-Limit": limit.toString(),
+            "X-RateLimit-Remaining": remaining.toString(),
+            "X-RateLimit-Reset": reset.toString(),
+          },
+        },
       );
     }
 
