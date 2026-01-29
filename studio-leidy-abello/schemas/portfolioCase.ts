@@ -24,10 +24,10 @@ export const portfolioCase = defineType({
       type: "text",
     }),
     defineField({
-      name: "content",
-      title: "Contenido",
+      name: "body",
+      title: "Cuerpo",
       type: "array",
-      of: [{ type: "block" }],
+      of: [{ type: "block" }, { type: "image" }],
     }),
     defineField({
       name: "consent",
@@ -36,15 +36,20 @@ export const portfolioCase = defineType({
       initialValue: false,
     }),
     defineField({
-      name: "heroImage",
-      title: "Imagen principal",
-      type: "image",
-      fields: [
+      name: "images",
+      title: "Galería de imágenes",
+      type: "array",
+      of: [
         {
-          name: "alt",
-          title: "Texto alternativo",
-          type: "string",
-          validation: (Rule) => Rule.required(),
+          type: "image",
+          fields: [
+            {
+              name: "alt",
+              title: "Texto alternativo",
+              type: "string",
+              validation: (Rule) => Rule.required(),
+            },
+          ],
         },
       ],
     }),

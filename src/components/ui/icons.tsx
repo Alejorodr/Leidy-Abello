@@ -1,3 +1,13 @@
 "use client";
 
-export { ArrowRight } from "@phosphor-icons/react";
+export {
+  ArrowRight,
+  InstagramLogo,
+  WhatsappLogo,
+  LinkedinLogo,
+  List,
+  X,
+  CaretRight,
+  CheckCircle,
+  Play
+} from "@phosphor-icons/react";

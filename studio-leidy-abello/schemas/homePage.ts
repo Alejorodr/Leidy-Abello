@@ -2,25 +2,23 @@ import { defineField, defineType } from "sanity";
 
 export const homePage = defineType({
   name: "homePage",
-  title: "Home",
+  title: "Página de inicio",
   type: "document",
   fields: [
     defineField({
-      name: "title",
-      title: "Título",
+      name: "heroTitle",
+      title: "Título Hero",
       type: "string",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "slug",
-      title: "Slug",
-      type: "slug",
-      options: { source: "title" },
-      validation: (Rule) => Rule.required(),
+      name: "heroSubtitle",
+      title: "Subtítulo Hero",
+      type: "text",
     }),
     defineField({
       name: "heroImage",
-      title: "Imagen principal",
+      title: "Imagen Hero",
       type: "image",
       fields: [
         {
@@ -30,6 +28,12 @@ export const homePage = defineType({
           validation: (Rule) => Rule.required(),
         },
       ],
+    }),
+    defineField({
+      name: "featuredServices",
+      title: "Servicios destacados",
+      type: "array",
+      of: [{ type: "reference", to: [{ type: "service" }] }],
     }),
     defineField({
       name: "seo",

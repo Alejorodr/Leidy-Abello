@@ -5,4 +5,5 @@ export default defineCliConfig({
     projectId: "x2h90o8o",
     dataset: "production",
   },
+  studioHost: "leidy-abello",
 });

@@ -12,10 +12,25 @@ export const siteSettings = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "description",
+      title: "Descripción del sitio",
+      type: "text",
+    }),
+    defineField({
       name: "navigation",
       title: "Navegación",
       type: "array",
-      of: [{ type: "string" }],
+      of: [
+        {
+          type: "object",
+          name: "navLink",
+          fields: [
+            { name: "label", type: "string", title: "Etiqueta" },
+            { name: "href", type: "string", title: "Enlace" },
+            { name: "order", type: "number", title: "Orden" },
+          ],
+        },
+      ],
     }),
     defineField({
       name: "social",
@@ -24,6 +39,7 @@ export const siteSettings = defineType({
       fields: [
         { name: "instagram", type: "url", title: "Instagram" },
         { name: "whatsapp", type: "string", title: "WhatsApp" },
+        { name: "linkedin", type: "url", title: "LinkedIn" },
         { name: "email", type: "email", title: "Email" },
       ],
     }),

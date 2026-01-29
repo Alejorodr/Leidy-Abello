@@ -35,8 +35,8 @@ export const blogPost = defineType({
       type: "string",
     }),
     defineField({
-      name: "coverImage",
-      title: "Imagen de portada",
+      name: "mainImage",
+      title: "Imagen principal",
       type: "image",
       fields: [
         {
@@ -46,6 +46,12 @@ export const blogPost = defineType({
           validation: (Rule) => Rule.required(),
         },
       ],
+    }),
+    defineField({
+      name: "body",
+      title: "Cuerpo",
+      type: "array",
+      of: [{ type: "block" }, { type: "image" }],
     }),
     defineField({
       name: "seo",
