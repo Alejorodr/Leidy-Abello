@@ -1,40 +1,52 @@
 import Link from "next/link";
+import { sanityFetch } from "@/lib/sanity/client";
+import { siteSettingsQuery } from "@/lib/sanity/queries";
+import { SiteSettings } from "@/lib/sanity/types";
 
-const footerLinks = [
-  { href: "/sobre-mi", label: "Sobre mí" },
-  { href: "/servicios", label: "Servicios" },
-  { href: "/portafolio", label: "Portafolio" },
-  { href: "/blog", label: "Blog" },
-  { href: "/podcast", label: "Podcast" },
-  { href: "/contacto", label: "Contacto" },
-];
+export async function Footer() {
+  const settings = await sanityFetch<SiteSettings>({
+    query: siteSettingsQuery,
+    tags: ["siteSettings"],
+  });
 
-export function Footer() {
+  const navLinks = settings?.navigation || [];
+
   return (
-    <footer className="border-t border-brand-300/30 bg-white/70">
-      <div className="mx-auto grid max-w-6xl gap-8 px-6 py-12 md:grid-cols-[1.4fr_1fr] md:px-10">
-        <div>
-          <p className="text-sm uppercase tracking-[0.2em] text-brand-300">
-            Leidy Abello
+    <footer className="border-t border-brand-300/30 bg-neutral-50">
+      <div className="mx-auto grid max-w-6xl gap-12 px-6 py-16 md:grid-cols-[1.5fr_1fr] md:px-10">
+        <div className="space-y-6">
+          <p className="text-xs uppercase tracking-[0.3em] text-brand-500 font-bold">
+            {settings?.title || "Leidy Abello"}
           </p>
-          <h3 className="mt-3 text-2xl font-semibold">
+          <h3 className="text-3xl font-semibold text-neutral-900">
             Tu templo es tu arte
           </h3>
-          <p className="mt-4 text-sm text-neutral-600">
-            Espacios de bienestar, estética y acompañamiento consciente para
-            reconectar con tu esencia y cuidar tu identidad.
+          <p className="max-w-md text-neutral-600 leading-relaxed">
+            {settings?.description || "Espacios de bienestar, estética y acompañamiento consciente para reconectar con tu esencia y cuidar tu identidad."}
           </p>
         </div>
-        <div className="grid gap-3 text-sm text-neutral-600 md:justify-self-end">
-          {footerLinks.map((link) => (
-            <Link key={link.href} href={link.href}>
-              {link.label}
-            </Link>
-          ))}
+        <div className="grid grid-cols-2 gap-8 md:justify-items-end">
+            <div className="space-y-4">
+                <p className="text-xs font-bold uppercase tracking-widest text-neutral-400">Explorar</p>
+                <nav className="flex flex-col gap-3 text-sm text-neutral-600">
+                    {navLinks.map((link) => (
+                        <Link key={link.href} href={link.href} className="hover:text-brand-500 transition">
+                        {link.label}
+                        </Link>
+                    ))}
+                </nav>
+            </div>
+            <div className="space-y-4">
+                <p className="text-xs font-bold uppercase tracking-widest text-neutral-400">Legal</p>
+                <nav className="flex flex-col gap-3 text-sm text-neutral-600">
+                    <Link href="/privacidad" className="hover:text-brand-500 transition">Privacidad</Link>
+                    <Link href="/terminos" className="hover:text-brand-500 transition">Términos</Link>
+                </nav>
+            </div>
         </div>
       </div>
-      <div className="border-t border-brand-300/30 py-6 text-center text-xs text-neutral-500">
-        © {new Date().getFullYear()} Leidy Abello. Todos los derechos reservados.
+      <div className="border-t border-neutral-200 py-8 text-center text-xs uppercase tracking-widest text-neutral-400">
+        © {new Date().getFullYear()} {settings?.title || "Leidy Abello"} · Todos los derechos reservados
       </div>
     </footer>
   );

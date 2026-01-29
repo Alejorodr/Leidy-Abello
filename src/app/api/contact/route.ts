@@ -1,6 +1,7 @@
-// src/app/api/contact/route.ts
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { Ratelimit } from "@upstash/ratelimit";
+import { kv } from "@vercel/kv";
 import prisma from "@/lib/prisma";
 import {
   emailRegex,
@@ -15,12 +16,43 @@ const maxNameLength = 200;
 const maxEmailLength = 320;
 const maxMessageLength = 5000;
 
+// Create a new ratelimiter, that allows 5 requests per 10 minutes
+const ratelimit = new Ratelimit({
+  redis: kv,
+  limiter: Ratelimit.slidingWindow(5, "10 m"),
+  analytics: true,
+  prefix: "@upstash/ratelimit",
+});
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { name: rawName, email: rawEmail, message: rawMessage, captchaToken } = body;
 
-    // 1. Sanitize and Validate input
+    // 1. Rate Limiting
+    const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
+    const { success, limit, reset, remaining } = await ratelimit.limit(
+      `ratelimit_contact_${ip}`
+    );
+
+    if (!success) {
+      return NextResponse.json(
+        {
+            error: "Has realizado demasiados intentos. Por favor, intenta de nuevo más tarde.",
+            retryAfter: reset
+        },
+        {
+            status: 429,
+            headers: {
+                "X-RateLimit-Limit": limit.toString(),
+                "X-RateLimit-Remaining": remaining.toString(),
+                "X-RateLimit-Reset": reset.toString(),
+            }
+        }
+      );
+    }
+
+    // 2. Sanitize and Validate input
     if (!rawName || !rawEmail || !rawMessage) {
       return NextResponse.json(
         { error: "Todos los campos son obligatorios." },
@@ -50,18 +82,19 @@ export async function POST(request: Request) {
       );
     }
 
-    // 2. Validate hCaptcha token
+    // 3. Validate hCaptcha token
     const hcaptchaSecret = process.env.HCAPTCHA_SECRET;
-    if (!hcaptchaSecret) {
-      if (process.env.NODE_ENV === "production") {
-        console.error("HCAPTCHA_SECRET is missing in production environment.");
+    const isDevBypass = process.env.NODE_ENV !== "production" && process.env.HCAPTCHA_BYPASS === "true";
+
+    if (!isDevBypass) {
+      if (!hcaptchaSecret) {
+        console.error("HCAPTCHA_SECRET is missing.");
         return NextResponse.json(
           { error: "Error de configuración del servidor." },
           { status: 500 },
         );
       }
-      console.warn("hCaptcha validation skipped: HCAPTCHA_SECRET not set.");
-    } else {
+
       if (!captchaToken) {
         return NextResponse.json(
           { error: "CAPTCHA requerido." },
@@ -90,9 +123,11 @@ export async function POST(request: Request) {
           { status: 400 },
         );
       }
+    } else {
+      console.warn("hCaptcha validation bypassed (Development mode).");
     }
 
-    // 3. Save lead to database
+    // 4. Save lead to database
     await prisma.lead.create({
       data: {
         name,
@@ -101,7 +136,7 @@ export async function POST(request: Request) {
       },
     });
 
-    // 4. Send email notification
+    // 5. Send email notification
     const toEmail = process.env.CONTACT_TO_EMAIL;
     const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
 
@@ -118,7 +153,7 @@ export async function POST(request: Request) {
       const { error: emailError } = await resend.emails.send({
         from: `Contacto <${fromEmail}>`,
         to: toEmail,
-        subject: "Nuevo mensaje de contacto",
+        subject: `Nuevo mensaje de contacto: ${name}`,
         html: `
           <h1>Nuevo mensaje de contacto</h1>
           <p><strong>Nombre:</strong> ${escapeHtml(name)}</p>

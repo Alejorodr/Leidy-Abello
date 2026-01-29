@@ -19,9 +19,14 @@ export const podcastEpisode = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "summary",
+      name: "excerpt",
       title: "Resumen",
       type: "text",
+    }),
+    defineField({
+      name: "publishedAt",
+      title: "Fecha publicación",
+      type: "datetime",
     }),
     defineField({
       name: "duration",
@@ -29,7 +34,12 @@ export const podcastEpisode = defineType({
       type: "string",
     }),
     defineField({
-      name: "coverImage",
+      name: "audioUrl",
+      title: "URL del audio/Spotify",
+      type: "url",
+    }),
+    defineField({
+      name: "image",
       title: "Imagen",
       type: "image",
       fields: [
@@ -40,6 +50,12 @@ export const podcastEpisode = defineType({
           validation: (Rule) => Rule.required(),
         },
       ],
+    }),
+    defineField({
+      name: "body",
+      title: "Notas del episodio",
+      type: "array",
+      of: [{ type: "block" }],
     }),
     defineField({
       name: "seo",

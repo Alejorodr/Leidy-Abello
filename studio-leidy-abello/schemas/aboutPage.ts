@@ -24,15 +24,10 @@ export const aboutPage = defineType({
       type: "text",
     }),
     defineField({
-      name: "philosophy",
-      title: "Filosofía",
-      type: "text",
-    }),
-    defineField({
-      name: "values",
-      title: "Valores",
+      name: "body",
+      title: "Cuerpo",
       type: "array",
-      of: [{ type: "string" }],
+      of: [{ type: "block" }, { type: "image" }],
     }),
     defineField({
       name: "portrait",

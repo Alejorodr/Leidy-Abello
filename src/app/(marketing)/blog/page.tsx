@@ -1,17 +1,20 @@
 import Link from "next/link";
 import { Metadata } from "next";
-
 import { Button } from "@/components/ui/button";
-import { getBlogPosts } from "@/lib/sanity";
-import { BlogPost } from "@/lib/sanity.types";
+import { sanityFetch } from "@/lib/sanity/client";
+import { blogPostsQuery } from "@/lib/sanity/queries";
+import { BlogPost } from "@/lib/sanity/types";
 
 export const metadata: Metadata = {
-  title: "Blog",
+  title: "Blog | Leidy Abello",
   description: "Reflexiones sobre autoestima, estética consciente y bienestar.",
 };
 
 export default async function BlogPage() {
-  const blogPosts: BlogPost[] = await getBlogPosts();
+  const blogPosts = await sanityFetch<BlogPost[]>({
+    query: blogPostsQuery,
+    tags: ["blogPost"]
+  });
 
   return (
     <section className="mx-auto max-w-5xl space-y-10 px-6 py-16 md:px-10">
@@ -24,15 +27,15 @@ export default async function BlogPage() {
         </p>
       </header>
       <div className="grid gap-6 md:grid-cols-2">
-        {blogPosts.map((post) => (
-          <article key={post.slug.current} className="card">
+        {blogPosts?.map((post) => (
+          <article key={post.slug.current} className="rounded-2xl border border-neutral-100 bg-white p-8 shadow-sm transition hover:shadow-md">
             <p className="text-xs uppercase tracking-[0.2em] text-brand-300">
               {new Date(post.publishedAt).toLocaleDateString("es-ES", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
-              })}{" "}
-              · {post.readTime}
+              })}
+              {post.readTime && ` · ${post.readTime}`}
             </p>
             <h2 className="mt-3 text-2xl font-semibold">{post.title}</h2>
             <p className="mt-3 text-sm text-neutral-600">{post.excerpt}</p>
