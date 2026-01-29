@@ -16,7 +16,7 @@ Se ha completado la refactorización integral del sitio web para convertirlo en 
 - **Tipografía:** Integración de `@tailwindcss/typography` para el renderizado de Portable Text, asegurando legibilidad editorial.
 
 ### 3. Seguridad y Robustez (Production-Ready)
-- **Protección de Contacto:** Implementado Rate Limiting basado en Vercel KV (5 solicitudes / 10 min) y validación estricta de hCaptcha.
+- **Protección de Contacto:** Implementado Rate Limiting basado en Upstash Redis (5 solicitudes / 10 min) y validación estricta de hCaptcha.
 - **API Segura:** Sanitización de inputs y escape de HTML en correos de Resend.
 - **Headers de Seguridad:** Configuración de CSP, XSS protection y Frame Options en `next.config.mjs`.
 - **SEO Dinámico:** Sitemap y Robots.txt generados dinámicamente consultando el CMS.
@@ -71,11 +71,20 @@ CONTACT_TO_EMAIL=tu@email.com
 # Database (Prisma)
 DATABASE_URL=...
 
-# Rate Limiting (Vercel KV)
-KV_REST_API_URL=...
-KV_REST_API_TOKEN=...
+# Rate Limiting (Upstash Redis)
+UPSTASH_REDIS_REST_URL=...
+UPSTASH_REDIS_REST_TOKEN=...
 
 # Captcha
 NEXT_PUBLIC_HCAPTCHA_SITEKEY=...
 HCAPTCHA_SECRET=...
 ```
+
+---
+
+## Deployment Checklist (Vercel)
+
+1. **Upstash Redis Integration:** Agrega la integración de Upstash Redis en el dashboard de Vercel para obtener la base de datos de rate limiting.
+2. **Variables de Entorno:** Configura todas las variables listadas arriba en la configuración de Vercel.
+3. **Webhook de Sanity:** Asegúrate de que el webhook en `manage.sanity.io` use el mismo `SANITY_REVALIDATE_SECRET` configurado en Vercel.
+4. **Build Success:** El build ejecutará automáticamente `prisma generate` y la validación de variables de entorno.

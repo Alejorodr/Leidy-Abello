@@ -4,27 +4,15 @@ import prisma from "@/lib/prisma";
 import { Resend } from "resend";
 
 // Mock Ratelimit
-vi.mock("@upstash/ratelimit", () => {
-  return {
-    Ratelimit: Object.assign(
-      vi.fn().mockImplementation(() => ({
-        limit: vi.fn().mockResolvedValue({
-          success: true,
-          limit: 5,
-          remaining: 4,
-          reset: Date.now() + 1000,
-        }),
-      })),
-      {
-        slidingWindow: vi.fn(),
-      }
-    ),
-  };
-});
-
-// Mock vercel kv
-vi.mock("@vercel/kv", () => ({
-  kv: {},
+vi.mock("@/lib/ratelimit", () => ({
+  contactLimiter: {
+    limit: vi.fn().mockResolvedValue({
+      success: true,
+      limit: 5,
+      remaining: 4,
+      reset: Date.now() + 1000,
+    }),
+  },
 }));
 
 // Mock prisma
