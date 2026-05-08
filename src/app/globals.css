@@ -25,24 +25,78 @@
     --ring: 0 30% 55%;
     --radius: 1.5rem;
   }
-}
 
-@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Offset for sticky header */
+    scroll-padding-top: 80px;
+  }
+
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-brand-50 font-sans text-neutral-900 antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-serif text-neutral-900;
   }
 }
 
-.prose {
+@layer components {
+  .prose {
     @apply max-w-[70ch] leading-relaxed;
+  }
+
+  .prose h2,
+  .prose h3 {
+    @apply font-serif;
+  }
+
+  /* Page hero label */
+  .eyebrow {
+    @apply text-xs font-bold uppercase tracking-[0.4em] text-brand-500;
+  }
+
+  /* Decorative divider */
+  .divider-brand {
+    @apply mx-auto h-[1px] w-16 bg-brand-300/50;
+  }
 }
 
-.prose h2, .prose h3 {
-    @apply font-serif;
+@layer utilities {
+  /* Parallax container — overflow hidden required on parent */
+  .parallax-container {
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Text gradient */
+  .text-gradient-brand {
+    background: linear-gradient(135deg, #af6c6c 0%, #c5a059 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Blur overlay */
+  .glass {
+    background: rgba(250, 247, 246, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* Hover lift — add to interactive cards */
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-medium;
+  }
 }

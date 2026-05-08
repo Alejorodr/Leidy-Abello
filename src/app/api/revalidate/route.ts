@@ -18,22 +18,22 @@ export async function POST(req: NextRequest) {
     }
 
     // Revalidate by type (e.g. 'blogPost', 'service', 'siteSettings')
-    revalidateTag(body._type);
+    revalidateTag(body._type, {});
 
     // If it has a slug, revalidate the specific document tag
     const slug = (body as any).slug?.current;
     if (slug) {
-      revalidateTag(`${body._type}:${slug}`);
+      revalidateTag(`${body._type}:${slug}`, {});
     }
 
     // Also revalidate siteSettings if anything changes, as it might affect global state (navigation, footer)
     // and revalidate 'homePage' as it often references multiple other types
-    if (body._type !== 'siteSettings') {
-      revalidateTag('siteSettings');
+    if (body._type !== "siteSettings") {
+      revalidateTag("siteSettings", {});
     }
 
-    if (body._type !== 'homePage') {
-      revalidateTag('homePage');
+    if (body._type !== "homePage") {
+      revalidateTag("homePage", {});
     }
 
     return NextResponse.json({
