@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import logo from "../../../public/images/Logo_Leidy_Abello.webp";
 import { ArrowRight } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
@@ -6,14 +7,12 @@ import { Card } from "@/components/ui/card";
 import { Section } from "@/components/ui/section";
 import { Container } from "@/components/ui/container";
 import { ParallaxHero } from "@/components/ui/parallax-hero";
+import { WardrobeParallax } from "@/components/ui/wardrobe-parallax";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal";
 import { sanityFetch } from "@/lib/sanity/client";
 import { homePageQuery } from "@/lib/sanity/queries";
 import { HomePage as HomePageType } from "@/lib/sanity/types";
 import { urlFor } from "@/lib/sanity/image";
-import { ParallaxHero } from "@/components/ui/parallax-hero";
-import { WardrobeParallax } from "@/components/ui/wardrobe-parallax"; // ← agregar acá
-import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal";
 export default async function HomePage() {
   const homeData = await sanityFetch<HomePageType>({
     query: homePageQuery,
@@ -43,8 +42,7 @@ export default async function HomePage() {
       />
       {/* ── 2. Wardrobe Parallax — outfit change on scroll ── */}
       <WardrobeParallax />
-      {/* ── 2. Manifesto strip ── */} {/* ← este comentario ya existe */}
-      {/* ── 2. Manifesto strip ── */}
+      {/* ── 3. Manifesto strip ── */}
       <Section className="bg-brand-50" spacing="md">
         <Container>
           <Reveal direction="up" className="text-center">
@@ -144,12 +142,12 @@ export default async function HomePage() {
                 {/* Decorative accent */}
                 <div className="absolute -right-4 -top-4 z-10 h-24 w-24 rounded-full border-2 border-brand-200 opacity-60" />
                 <div className="absolute -bottom-4 -left-4 z-10 h-16 w-16 rounded-full bg-brand-100" />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src="/images/About-me.png"
                   alt="Leidy Abello — Personal Shopper"
-                  className="h-full w-full object-cover object-top"
-                  loading="lazy"
+                  fill
+                  className="object-cover object-top"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
             </Reveal>
