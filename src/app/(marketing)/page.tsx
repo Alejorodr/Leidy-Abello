@@ -11,7 +11,9 @@ import { sanityFetch } from "@/lib/sanity/client";
 import { homePageQuery } from "@/lib/sanity/queries";
 import { HomePage as HomePageType } from "@/lib/sanity/types";
 import { urlFor } from "@/lib/sanity/image";
-
+import { ParallaxHero } from "@/components/ui/parallax-hero";
+import { WardrobeParallax } from "@/components/ui/wardrobe-parallax"; // ← agregar acá
+import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal";
 export default async function HomePage() {
   const homeData = await sanityFetch<HomePageType>({
     query: homePageQuery,
@@ -39,7 +41,9 @@ export default async function HomePage() {
         heroImageUrl={heroImageUrl}
         heroImageAlt={heroImageAlt}
       />
-
+      {/* ── 2. Wardrobe Parallax — outfit change on scroll ── */}
+      <WardrobeParallax />
+      {/* ── 2. Manifesto strip ── */} {/* ← este comentario ya existe */}
       {/* ── 2. Manifesto strip ── */}
       <Section className="bg-brand-50" spacing="md">
         <Container>
@@ -53,7 +57,6 @@ export default async function HomePage() {
           </Reveal>
         </Container>
       </Section>
-
       {/* ── 3. Services ── */}
       <Section id="servicios" className="bg-white">
         <Container>
@@ -115,7 +118,6 @@ export default async function HomePage() {
           </div>
         </Container>
       </Section>
-
       {/* ── 4. About preview strip ── */}
       <Section className="bg-brand-50" spacing="lg">
         <Container>
@@ -154,7 +156,6 @@ export default async function HomePage() {
           </div>
         </Container>
       </Section>
-
       {/* ── 5. CTA banner ── */}
       <Section className="bg-white" spacing="md">
         <Container>
