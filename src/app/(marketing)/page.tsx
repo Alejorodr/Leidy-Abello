@@ -12,7 +12,7 @@ import { homePageQuery } from "@/lib/sanity/queries";
 import { HomePage as HomePageType } from "@/lib/sanity/types";
 import { urlFor } from "@/lib/sanity/image";
 import { ParallaxHero } from "@/components/ui/parallax-hero";
-import { WardrobeParallax } from "@/components/ui/wardrobe-parallax"; // ← agregar acá
+import { WardrobeParallax } from "@/components/ui/wardrobe-parallax";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal";
 export default async function HomePage() {
   const homeData = await sanityFetch<HomePageType>({
@@ -34,17 +34,13 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* ── 1. Parallax Hero ── */}
       <ParallaxHero
         title={heroTitle}
         subtitle={heroSubtitle}
         heroImageUrl={heroImageUrl}
         heroImageAlt={heroImageAlt}
       />
-      {/* ── 2. Wardrobe Parallax — outfit change on scroll ── */}
       <WardrobeParallax />
-      {/* ── 2. Manifesto strip ── */} {/* ← este comentario ya existe */}
-      {/* ── 2. Manifesto strip ── */}
       <Section className="bg-brand-50" spacing="md">
         <Container>
           <Reveal direction="up" className="text-center">
