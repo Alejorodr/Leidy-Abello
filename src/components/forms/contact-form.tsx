@@ -101,18 +101,19 @@ export function ContactForm() {
         onSubmit={handleSubmit}
       >
         <div className="space-y-2">
-          <label className="text-sm font-bold uppercase tracking-widest text-neutral-500" htmlFor="name">
+          <label
+            className="text-sm font-bold uppercase tracking-widest text-neutral-500"
+            htmlFor="name"
+          >
             Nombre completo
           </label>
-          <Input
-            id="name"
-            name="name"
-            placeholder="Tu nombre"
-            required
-          />
+          <Input id="name" name="name" placeholder="Tu nombre" required />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-bold uppercase tracking-widest text-neutral-500" htmlFor="email">
+          <label
+            className="text-sm font-bold uppercase tracking-widest text-neutral-500"
+            htmlFor="email"
+          >
             Correo electrónico
           </label>
           <Input
@@ -124,7 +125,10 @@ export function ContactForm() {
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-bold uppercase tracking-widest text-neutral-500" htmlFor="message">
+          <label
+            className="text-sm font-bold uppercase tracking-widest text-neutral-500"
+            htmlFor="message"
+          >
             ¿En qué puedo acompañarte?
           </label>
           <Textarea
@@ -144,18 +148,33 @@ export function ContactForm() {
               onExpire={() => setHcaptchaToken("")}
             />
           </div>
-        ) : null}
-        <Button type="submit" size="lg" className="w-full md:w-fit" disabled={submitting}>
+        ) : (
+          <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700">
+            El formulario no está disponible: falta configurar{" "}
+            <code>NEXT_PUBLIC_HCAPTCHA_SITEKEY</code>.
+          </p>
+        )}
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full md:w-fit"
+          disabled={submitting}
+        >
           {submitting ? "ENVIANDO..." : "ENVIAR MENSAJE"}
         </Button>
         {successMessage ? (
-          <p className="text-sm font-medium text-emerald-600 bg-emerald-50 p-4 rounded-xl border border-emerald-100">{successMessage}</p>
+          <p className="rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-sm font-medium text-emerald-600">
+            {successMessage}
+          </p>
         ) : null}
         {errorMessage ? (
-          <p className="text-sm font-medium text-rose-600 bg-rose-50 p-4 rounded-xl border border-rose-100">{errorMessage}</p>
+          <p className="rounded-xl border border-rose-100 bg-rose-50 p-4 text-sm font-medium text-rose-600">
+            {errorMessage}
+          </p>
         ) : null}
-        <p className="text-xs text-neutral-400 text-center">
-          Protegemos tu privacidad. Tu información será tratada con absoluta confidencialidad.
+        <p className="text-center text-xs text-neutral-400">
+          Protegemos tu privacidad. Tu información será tratada con absoluta
+          confidencialidad.
         </p>
       </form>
     </Card>

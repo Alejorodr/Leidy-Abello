@@ -33,6 +33,23 @@ const nextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
           },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+          {
+            key: "Content-Security-Policy",
+            value: [
+              "default-src 'self'",
+              "script-src 'self' https://hcaptcha.com https://*.hcaptcha.com 'unsafe-inline'",
+              "frame-src https://hcaptcha.com https://*.hcaptcha.com",
+              "style-src 'self' 'unsafe-inline'",
+              "font-src 'self' https://fonts.gstatic.com",
+              "img-src 'self' data: https://cdn.sanity.io",
+              "connect-src 'self' https://hcaptcha.com https://*.hcaptcha.com https://api.resend.com",
+              "frame-ancestors 'none'",
+            ].join("; "),
+          },
         ],
       },
     ];
