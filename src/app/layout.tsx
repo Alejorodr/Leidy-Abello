@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Manrope, Playfair_Display } from "next/font/google";
+import { SessionProvider } from "@/components/portal/session-provider";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -16,8 +17,7 @@ const manrope = Manrope({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ??
-      "https://leidy-abello-neon.vercel.app/",
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://leidy-abello-neon.vercel.app/",
   ),
   title: {
     default: "Leidy Abello · Tu templo es tu arte",
@@ -50,7 +50,7 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${playfair.variable} ${manrope.variable}`}>
       <body className="min-h-screen bg-brand-50 text-neutral-900">
-        {children}
+        <SessionProvider>{children}</SessionProvider>
       </body>
     </html>
   );

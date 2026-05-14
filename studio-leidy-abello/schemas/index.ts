@@ -7,6 +7,7 @@ import { testimonial } from "./testimonial";
 import { blogPost } from "./blogPost";
 import { podcastEpisode } from "./podcastEpisode";
 import { faq } from "./faq";
+import resourceItem from "./resourceItem";
 
 export const schemaTypes = [
   siteSettings,
@@ -18,4 +19,5 @@ export const schemaTypes = [
   blogPost,
   podcastEpisode,
   faq,
+  resourceItem,
 ];

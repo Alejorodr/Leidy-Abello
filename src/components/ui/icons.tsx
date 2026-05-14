@@ -8,6 +8,11 @@ export {
   List,
   X,
   CaretRight,
+  CaretDown,
   CheckCircle,
-  Play
+  Play,
+  EnvelopeSimple,
+  CalendarBlank,
+  PaperPlaneTilt,
+  MapPin,
 } from "@phosphor-icons/react";

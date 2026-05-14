@@ -74,6 +74,12 @@
 }
 
 @layer utilities {
+  /* Marquee scroll animation */
+  .animate-marquee {
+    animation: marquee-scroll 35s linear infinite;
+    will-change: transform;
+  }
+
   /* Parallax container — overflow hidden required on parent */
   .parallax-container {
     overflow: hidden;
@@ -98,5 +104,14 @@
   /* Hover lift — add to interactive cards */
   .hover-lift {
     @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-medium;
+  }
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
   }
 }

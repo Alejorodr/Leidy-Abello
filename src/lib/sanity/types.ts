@@ -89,3 +89,20 @@ export interface AboutPage {
   portrait: SanityImage;
   seo?: SEO;
 }
+
+export type ResourceType = "video" | "podcast" | "lookbook" | "article";
+
+export interface ResourceItem {
+  title: string;
+  slug: { current: string };
+  resourceType: ResourceType;
+  isFree: boolean;
+  excerpt?: string;
+  coverImage?: SanityImage;
+  publishedAt: string;
+  duration?: string;
+  youtubeId?: string;
+  audioUrl?: string;
+  pdfUrl?: string;
+  body?: any[];
+}

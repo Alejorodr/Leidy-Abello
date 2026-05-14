@@ -8,7 +8,9 @@ import { Section } from "@/components/ui/section";
 import { Container } from "@/components/ui/container";
 import { ParallaxHero } from "@/components/ui/parallax-hero";
 import { WardrobeParallax } from "@/components/ui/wardrobe-parallax";
+import { MarqueeTicker } from "@/components/ui/marquee";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal";
+import { FaqSection } from "@/components/sections/faq-section";
 import { sanityFetch } from "@/lib/sanity/client";
 import { homePageQuery, blogPreviewQuery } from "@/lib/sanity/queries";
 import { HomePage as HomePageType, BlogPost } from "@/lib/sanity/types";
@@ -80,7 +82,10 @@ export default async function HomePage() {
       {/* ── 2. Wardrobe Parallax ── */}
       <WardrobeParallax />
 
-      {/* ── 3. Manifesto strip ── */}
+      {/* ── 3. Marquee ticker ── */}
+      <MarqueeTicker />
+
+      {/* ── 4. Manifesto strip ── */}
       <Section className="bg-brand-50" spacing="md">
         <Container>
           <Reveal direction="up" className="text-center">
@@ -328,7 +333,10 @@ export default async function HomePage() {
         </Section>
       )}
 
-      {/* ── 9. CTA banner ── */}
+      {/* ── 9. FAQ ── */}
+      <FaqSection />
+
+      {/* ── 10. CTA banner ── */}
       <Section className="bg-white" spacing="md">
         <Container>
           <Reveal direction="up">
