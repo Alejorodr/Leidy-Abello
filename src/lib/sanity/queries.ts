@@ -136,3 +136,36 @@ export const aboutPageQuery = groq`
     seo
   }
 `;
+
+export const portalResourcesQuery = groq`
+  *[_type == "resourceItem"] | order(publishedAt desc) {
+    title,
+    slug,
+    resourceType,
+    isFree,
+    excerpt,
+    coverImage,
+    publishedAt,
+    duration,
+    youtubeId,
+    audioUrl,
+    pdfUrl
+  }
+`;
+
+export const portalResourceBySlugQuery = groq`
+  *[_type == "resourceItem" && slug.current == $slug][0] {
+    title,
+    slug,
+    resourceType,
+    isFree,
+    excerpt,
+    coverImage,
+    publishedAt,
+    duration,
+    youtubeId,
+    audioUrl,
+    pdfUrl,
+    body
+  }
+`;
