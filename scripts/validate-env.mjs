@@ -10,6 +10,11 @@ const REQUIRED_ENVS = [
   "NEXT_PUBLIC_HCAPTCHA_SITEKEY",
   "HCAPTCHA_SECRET",
   "NEXT_PUBLIC_SITE_URL",
+];
+
+// Portal vars — only warn; the marketing site builds without them.
+// Add these in Vercel before enabling /login, /portal, /admin.
+const PORTAL_ENVS = [
   "GOOGLE_CLIENT_ID",
   "GOOGLE_CLIENT_SECRET",
   "NEXTAUTH_SECRET",
@@ -33,6 +38,12 @@ function validate() {
     }
   } else {
     console.log("✅ Environment variables validated.");
+  }
+
+  const missingPortal = PORTAL_ENVS.filter((env) => !process.env[env]);
+  if (missingPortal.length > 0) {
+    console.warn("⚠️  Portal env vars not set (portal features will be unavailable):");
+    missingPortal.forEach((env) => console.warn(`   - ${env}`));
   }
 }
 
