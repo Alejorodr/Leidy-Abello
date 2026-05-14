@@ -10,14 +10,50 @@ import { ParallaxHero } from "@/components/ui/parallax-hero";
 import { WardrobeParallax } from "@/components/ui/wardrobe-parallax";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal";
 import { sanityFetch } from "@/lib/sanity/client";
-import { homePageQuery } from "@/lib/sanity/queries";
-import { HomePage as HomePageType } from "@/lib/sanity/types";
+import { homePageQuery, blogPreviewQuery } from "@/lib/sanity/queries";
+import { HomePage as HomePageType, BlogPost } from "@/lib/sanity/types";
 import { urlFor } from "@/lib/sanity/image";
+
+const STATS = [
+  { value: "+5", label: "Años de experiencia" },
+  { value: "+200", label: "Procesos de transformación" },
+  { value: "100%", label: "Enfoque personalizado" },
+];
+
+const PROCESS_STEPS = [
+  {
+    step: "01",
+    title: "Conversación inicial",
+    desc: "Hablamos de dónde estás y hacia dónde quieres ir. Sin compromiso, con toda la intención.",
+  },
+  {
+    step: "02",
+    title: "Diagnóstico",
+    desc: "Analizo tu estilo de vida, colorimetría, morfología y esencia para entender tu identidad profunda.",
+  },
+  {
+    step: "03",
+    title: "Proceso personalizado",
+    desc: "Trabajamos juntas en sesiones que respetan tu ritmo, tus necesidades y tu presupuesto.",
+  },
+  {
+    step: "04",
+    title: "Tu nueva versión",
+    desc: "Sales con herramientas concretas para vestirte con intención y reconectarte con quién eres.",
+  },
+];
+
 export default async function HomePage() {
-  const homeData = await sanityFetch<HomePageType>({
-    query: homePageQuery,
-    tags: ["homePage", "service"],
-  });
+  const [homeData, latestPosts] = await Promise.all([
+    sanityFetch<HomePageType>({
+      query: homePageQuery,
+      tags: ["homePage", "service"],
+    }),
+    sanityFetch<BlogPost[]>({
+      query: blogPreviewQuery,
+      tags: ["blogPost"],
+    }),
+  ]);
 
   const {
     heroTitle = "Tu templo es tu arte",
@@ -40,8 +76,10 @@ export default async function HomePage() {
         heroImageUrl={heroImageUrl}
         heroImageAlt={heroImageAlt}
       />
-      {/* ── 2. Wardrobe Parallax — outfit change on scroll ── */}
+
+      {/* ── 2. Wardrobe Parallax ── */}
       <WardrobeParallax />
+
       {/* ── 3. Manifesto strip ── */}
       <Section className="bg-brand-50" spacing="md">
         <Container>
@@ -55,7 +93,29 @@ export default async function HomePage() {
           </Reveal>
         </Container>
       </Section>
-      {/* ── 3. Services ── */}
+
+      {/* ── 4. Stats strip ── */}
+      <Section className="bg-brand-500" spacing="md">
+        <Container>
+          <RevealGroup
+            className="grid grid-cols-3 gap-8 text-center text-white"
+            staggerDelay={0.12}
+          >
+            {STATS.map(({ value, label }) => (
+              <RevealItem key={label}>
+                <p className="font-serif text-5xl font-medium md:text-6xl">
+                  {value}
+                </p>
+                <p className="mt-2 text-sm uppercase tracking-widest text-brand-200">
+                  {label}
+                </p>
+              </RevealItem>
+            ))}
+          </RevealGroup>
+        </Container>
+      </Section>
+
+      {/* ── 5. Services ── */}
       <Section id="servicios" className="bg-white">
         <Container>
           <div className="grid gap-16 md:grid-cols-[0.85fr_1.15fr] md:items-start">
@@ -116,8 +176,46 @@ export default async function HomePage() {
           </div>
         </Container>
       </Section>
-      {/* ── 4. About preview strip ── */}
-      <Section className="bg-brand-50" spacing="lg">
+
+      {/* ── 6. Process ── */}
+      <Section className="bg-brand-50">
+        <Container>
+          <Reveal direction="up" className="mb-16 space-y-4 text-center">
+            <p className="eyebrow">Cómo trabajo</p>
+            <h2 className="font-serif text-4xl font-medium leading-tight md:text-5xl">
+              Tu proceso, paso a paso
+            </h2>
+            <p className="mx-auto max-w-xl text-lg leading-relaxed text-neutral-600">
+              Cada persona es única. Por eso diseño cada proceso desde cero,
+              escuchando y acompañando sin prisas.
+            </p>
+          </Reveal>
+
+          <RevealGroup
+            className="grid gap-10 md:grid-cols-2 lg:grid-cols-4"
+            staggerDelay={0.12}
+          >
+            {PROCESS_STEPS.map(({ step, title, desc }) => (
+              <RevealItem key={step}>
+                <div className="group relative space-y-5 rounded-2xl p-6 transition-colors hover:bg-white hover:shadow-sm">
+                  <p className="font-serif text-7xl font-medium leading-none text-brand-200 transition-colors group-hover:text-brand-300">
+                    {step}
+                  </p>
+                  <h3 className="font-serif text-xl font-medium text-neutral-900">
+                    {title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-neutral-600">
+                    {desc}
+                  </p>
+                </div>
+              </RevealItem>
+            ))}
+          </RevealGroup>
+        </Container>
+      </Section>
+
+      {/* ── 7. About preview ── */}
+      <Section className="bg-white" spacing="lg">
         <Container>
           <div className="grid gap-12 md:grid-cols-2 md:items-center">
             <Reveal direction="right">
@@ -139,7 +237,6 @@ export default async function HomePage() {
 
             <Reveal direction="left" delay={0.15}>
               <div className="relative aspect-[4/5] overflow-hidden rounded-[40px] shadow-medium">
-                {/* Decorative accent */}
                 <div className="absolute -right-4 -top-4 z-10 h-24 w-24 rounded-full border-2 border-brand-200 opacity-60" />
                 <div className="absolute -bottom-4 -left-4 z-10 h-16 w-16 rounded-full bg-brand-100" />
                 <Image
@@ -154,12 +251,88 @@ export default async function HomePage() {
           </div>
         </Container>
       </Section>
-      {/* ── 5. CTA banner ── */}
+
+      {/* ── 8. Blog preview ── */}
+      {latestPosts && latestPosts.length > 0 && (
+        <Section className="bg-brand-50">
+          <Container>
+            <div className="mb-12 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+              <Reveal direction="right" className="space-y-2">
+                <p className="eyebrow">Blog</p>
+                <h2 className="font-serif text-4xl font-medium">
+                  Últimas reflexiones
+                </h2>
+              </Reveal>
+              <Reveal direction="left">
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="px-0 text-brand-500 hover:bg-transparent"
+                >
+                  <Link
+                    href="/blog"
+                    className="group flex items-center gap-2 font-bold tracking-tight"
+                  >
+                    VER TODOS{" "}
+                    <ArrowRight
+                      size={18}
+                      className="transition-transform group-hover:translate-x-1"
+                    />
+                  </Link>
+                </Button>
+              </Reveal>
+            </div>
+
+            <RevealGroup
+              className="grid gap-6 md:grid-cols-3"
+              staggerDelay={0.1}
+            >
+              {latestPosts.map((post) => (
+                <RevealItem key={post.slug.current}>
+                  <Link
+                    href={`/blog/${post.slug.current}`}
+                    className="group block h-full"
+                  >
+                    <Card className="flex h-full flex-col p-8" hover={true}>
+                      <div className="flex-1 space-y-3">
+                        {post.publishedAt && (
+                          <p className="text-xs uppercase tracking-widest text-neutral-400">
+                            {new Date(post.publishedAt).toLocaleDateString(
+                              "es-CO",
+                              {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              },
+                            )}
+                          </p>
+                        )}
+                        <h3 className="font-serif text-xl font-medium leading-snug transition-colors group-hover:text-brand-500">
+                          {post.title}
+                        </h3>
+                        {post.excerpt && (
+                          <p className="line-clamp-3 text-sm leading-relaxed text-neutral-600">
+                            {post.excerpt}
+                          </p>
+                        )}
+                      </div>
+                      <p className="mt-6 text-xs font-bold uppercase tracking-widest text-brand-400 transition-colors group-hover:text-brand-500">
+                        Leer artículo →
+                      </p>
+                    </Card>
+                  </Link>
+                </RevealItem>
+              ))}
+            </RevealGroup>
+          </Container>
+        </Section>
+      )}
+
+      {/* ── 9. CTA banner ── */}
       <Section className="bg-white" spacing="md">
         <Container>
           <Reveal direction="up">
             <div className="relative overflow-hidden rounded-[48px] bg-brand-500 px-8 py-20 text-center text-white shadow-medium">
-              {/* Decorative radial blob */}
               <div className="pointer-events-none absolute inset-0 opacity-[0.08]">
                 <div className="absolute -left-[20%] top-[-50%] h-[200%] w-[100%] bg-[radial-gradient(circle_at_center,_white,_transparent_70%)]" />
               </div>

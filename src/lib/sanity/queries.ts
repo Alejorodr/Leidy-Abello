@@ -58,6 +58,16 @@ export const blogPostsQuery = groq`
   }
 `;
 
+export const blogPreviewQuery = groq`
+  *[_type == "blogPost"] | order(publishedAt desc) [0...3] {
+    title,
+    slug,
+    excerpt,
+    publishedAt,
+    readTime
+  }
+`;
+
 export const blogPostBySlugQuery = groq`
   *[_type == "blogPost" && slug.current == $slug][0] {
     title,
