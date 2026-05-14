@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   InstagramLogo,
@@ -38,6 +39,7 @@ export function ScrollAwareHeader({
   social,
 }: ScrollAwareHeaderProps) {
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -70,15 +72,26 @@ export function ScrollAwareHeader({
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-7 text-sm font-medium text-neutral-700 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="relative transition-colors after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-brand-400 after:transition-all hover:text-brand-500 hover:after:w-full"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const isActive =
+              link.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "relative transition-colors after:absolute after:-bottom-1 after:left-0 after:h-px after:bg-brand-400 after:transition-all hover:text-brand-500",
+                  isActive
+                    ? "text-brand-500 after:w-full"
+                    : "after:w-0 hover:after:w-full",
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Actions */}
